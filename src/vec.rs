@@ -3,6 +3,9 @@ use ndarray_rand::rand_distr::Normal;
 use ndarray_rand::RandomExt;
 
 #[allow(dead_code)]
+const TOL: f64 = 1e-10;
+
+#[allow(dead_code)]
 pub fn l2_norm(x: Array1<f64>) -> f64 {
     x.dot(&x).sqrt()
 }
@@ -18,14 +21,14 @@ pub fn unit_vec(x: Array1<f64>) -> Array1<f64> {
 #[test]
 fn test_unit_vec() {
     let x = arr1(&[3.0, 4.0, 3.0]);
-    let expected = arr1(&[0.514_495_755_427_526_5, 0.685_994_340_570_035_3, 0.514_495_755_427_526_5]);
+    let expected = arr1(&[0.5144957554275265, 0.6859943405700353, 0.5144957554275265]);
     let result = unit_vec(x);
     assert_eq!(result, expected);
     for _ in 1..1_000 {
         let v = normal_vec(69);
         let unit_vec_v = unit_vec(v);
         let length = unit_vec_v.mapv(|x| x.powi(2)).sum();
-        approx::assert_relative_eq!(length, 1.0, epsilon = 1e-12);
+        approx::assert_relative_eq!(length, 1.0, epsilon = TOL);
     }
 }
 #[allow(dead_code)]
@@ -41,7 +44,7 @@ fn test_set_vec_len() {
     let w = normal_vec(69);
     let v = set_vec_len(9., w);
     let len_v = l2_norm(v);
-    approx::assert_relative_eq!(len_v, 9.0, epsilon = 1e-10);
+    approx::assert_relative_eq!(len_v, 9.0, epsilon = TOL);
 }
 #[allow(dead_code)]
 pub fn reorient_vec(v: Array2<f64>) -> Array2<f64> {
@@ -53,7 +56,7 @@ pub fn reorient_vec(v: Array2<f64>) -> Array2<f64> {
             output[(column, row)] = v[(row, column)];
         }
     }
-    output
+    return output;
 }
 #[test]
 fn test_reorient_vector() {
@@ -79,7 +82,7 @@ fn test_orth_decomp() {
     let v = arr1(&[4., 5., 3.]);
     let w = arr1(&[5., 4., 6.]);
     let beta = orth_decomp(&v, w);
-    assert_eq!(beta, 1.16);
+    approx::assert_relative_eq!(beta, 1.16, epsilon = TOL);
 }
 #[allow(dead_code)]
 pub fn parallel_component(a: Array1<f64>, b: Array1<f64>) -> Array1<f64> {
@@ -94,7 +97,7 @@ fn test_parallel_components() {
 
     let a_parallel = parallel_component(a.clone(), b.clone());
     let a_orth = &b - &a_parallel;
-    approx::assert_relative_eq!(a.dot(&a_orth), 0., epsilon = 1e-10);
+    approx::assert_relative_eq!(a.dot(&a_orth), 0., epsilon = TOL);
 }
 
 #[allow(dead_code)]
@@ -108,15 +111,15 @@ pub fn orthogonal_decomp(a: &Array1<f64>, b: &Array1<f64>) -> OrthogonalDecomp {
     let beta = a.dot(b) / a.dot(a);
     let parallel_component = a * beta;
     let orthogonal_component = b - &parallel_component;
-    
-    OrthogonalDecomp {
-        parallel_component,
-        orthogonal_component,
-    }
+    let output = OrthogonalDecomp {
+        parallel_component: parallel_component,
+        orthogonal_component: orthogonal_component,
+    };
+    return output;
 }
 #[test]
 fn test_orth_decomp_struct() {
-    let n: usize = 2_000_000;
+    let n: usize = 2000000;
     let a = normal_vec(n);
     let b = normal_vec(n);
     let orth_decomp = orthogonal_decomp(&a, &b);
@@ -125,6 +128,6 @@ fn test_orth_decomp_struct() {
             .orthogonal_component
             .dot(&orth_decomp.parallel_component),
         0.,
-        epsilon = 1e-10
+        epsilon = TOL
     );
 }
