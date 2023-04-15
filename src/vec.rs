@@ -21,7 +21,7 @@ pub fn unit_vec(x: Array1<f64>) -> Array1<f64> {
 #[test]
 fn test_unit_vec() {
     let x = arr1(&[3.0, 4.0, 3.0]);
-    let expected = arr1(&[0.5144957554275265, 0.6859943405700353, 0.5144957554275265]);
+    let expected = arr1(&[0.514_495_755_427_526_5, 0.685_994_340_570_035_3, 0.514_495_755_427_526_5]);
     let result = unit_vec(x);
     assert_eq!(result, expected);
     for _ in 1..1_000 {
@@ -56,7 +56,7 @@ pub fn reorient_vec(v: Array2<f64>) -> Array2<f64> {
             output[(column, row)] = v[(row, column)];
         }
     }
-    return output;
+    output
 }
 #[test]
 fn test_reorient_vector() {
@@ -111,15 +111,15 @@ pub fn orthogonal_decomp(a: &Array1<f64>, b: &Array1<f64>) -> OrthogonalDecomp {
     let beta = a.dot(b) / a.dot(a);
     let parallel_component = a * beta;
     let orthogonal_component = b - &parallel_component;
-    let output = OrthogonalDecomp {
-        parallel_component: parallel_component,
-        orthogonal_component: orthogonal_component,
-    };
-    return output;
+    
+    OrthogonalDecomp {
+        parallel_component,
+        orthogonal_component,
+    }
 }
 #[test]
 fn test_orth_decomp_struct() {
-    let n: usize = 2000000;
+    let n: usize = 2_000_000;
     let a = normal_vec(n);
     let b = normal_vec(n);
     let orth_decomp = orthogonal_decomp(&a, &b);
