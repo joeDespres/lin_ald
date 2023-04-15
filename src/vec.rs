@@ -12,7 +12,7 @@ pub fn l2_norm(x: Array1<f64>) -> f64 {
 #[test]
 fn testing_l2_norm() {
     let norm = l2_norm(arr1(&[1., 2., 2.]));
-    assert_eq!(norm, 3.);
+    approx::assert_relative_eq!(norm, 3., epsilon = TOL);
 }
 #[allow(dead_code)]
 pub fn unit_vec(x: Array1<f64>) -> Array1<f64> {
@@ -21,7 +21,11 @@ pub fn unit_vec(x: Array1<f64>) -> Array1<f64> {
 #[test]
 fn test_unit_vec() {
     let x = arr1(&[3.0, 4.0, 3.0]);
-    let expected = arr1(&[0.514_495_755_427_526_5, 0.685_994_340_570_035_3, 0.514_495_755_427_526_5]);
+    let expected = arr1(&[
+        0.514_495_755_427_526_5,
+        0.685_994_340_570_035_3,
+        0.514_495_755_427_526_5,
+    ]);
     let result = unit_vec(x);
     assert_eq!(result, expected);
     for _ in 1..1_000 {
@@ -111,7 +115,7 @@ pub fn orthogonal_decomp(a: &Array1<f64>, b: &Array1<f64>) -> OrthogonalDecomp {
     let beta = a.dot(b) / a.dot(a);
     let parallel_component = a * beta;
     let orthogonal_component = b - &parallel_component;
-    
+
     OrthogonalDecomp {
         parallel_component,
         orthogonal_component,
