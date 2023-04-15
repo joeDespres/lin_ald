@@ -1,13 +1,16 @@
 use ndarray::prelude::*;
 use std::time::Instant;
 
+use crate::vec::orth_decomp;
+
 mod vec;
 
 fn main() {
     let start_time = Instant::now();
-    let v: Array2<f64> = Array::zeros((4, 1));
-    let output = vec::reorient_vec(v);
-    dbg!(output);
+    let v = arr1(&[4., 5., 3.]);
+    let w = arr1(&[5., 4., 6.]);
+    let beta = orth_decomp(&v, w);
+    dbg!(beta);
 
     dbg!(start_time.elapsed());
 }
