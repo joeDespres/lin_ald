@@ -142,9 +142,7 @@ pub fn mul_weights(vec_set: Vec<Array1<f64>>, w: Vec<f64>) -> Vec<Array1<f64>> {
         vec_length.push(v.1.len());
     }
 
-    if !vec_length.iter().all(|&x| x == vec_length[0]) {
-        panic!("this vec set needs to be the same length");
-    }
+    assert!(vec_length.iter().all(|&x| x == vec_length[0]), "this vec set needs to be the same length");
 
     let m = vec_length[0];
     let n = w.len();
