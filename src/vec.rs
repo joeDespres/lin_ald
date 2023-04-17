@@ -135,3 +135,34 @@ fn test_orth_decomp_struct() {
         epsilon = TOL
     );
 }
+
+pub fn mul_weights(vec_set: Vec<Array1<f64>>, w: Vec<f64>) -> Vec<Array1<f64>> {
+    let mut vec_length = Vec::new();
+    for v in vec_set.iter().enumerate() {
+        vec_length.push(v.1.len());
+    }
+
+    if !vec_length.iter().all(|&x| x == vec_length[0]) {
+        panic!("this vec set needs to be the same length");
+    }
+
+    let m = vec_length[0];
+    let n = w.len();
+    let mut output: Vec<Array1<f64>> = vec![Array1::zeros(m); n];
+    for (i, v) in vec_set.iter().enumerate() {
+        output[i] = w[i] * v;
+    }
+    output
+}
+#[test]
+fn test_mul_weights() {
+    let v = arr1(&[4., 5., 3.]);
+    let w = arr1(&[5., 4., 6.]);
+    let vcts = vec![v, w];
+    let weights = vec![10.0, 69.0];
+
+    let weight_mul = mul_weights(vcts, weights);
+
+    let expectation = vec![arr1(&[40., 50., 30.]), arr1(&[345., 276., 414.])];
+    assert_eq!(weight_mul, expectation)
+}
