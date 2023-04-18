@@ -1,3 +1,4 @@
+use approx::assert_relative_eq;
 use ndarray::prelude::*;
 use ndarray_rand::rand_distr::Normal;
 use ndarray_rand::RandomExt;
@@ -142,7 +143,10 @@ pub fn mul_weights(vec_set: Vec<Array1<f64>>, w: Vec<f64>) -> Vec<Array1<f64>> {
         vec_length.push(v.1.len());
     }
 
-    assert!(vec_length.iter().all(|&x| x == vec_length[0]), "this vec set needs to be the same length");
+    assert!(
+        vec_length.iter().all(|&x| x == vec_length[0]),
+        "this vec set needs to be the same length"
+    );
 
     let m = vec_length[0];
     let n = w.len();
@@ -163,4 +167,29 @@ fn test_mul_weights() {
 
     let expectation = vec![arr1(&[40., 50., 30.]), arr1(&[345., 276., 414.])];
     assert_eq!(weight_mul, expectation)
+}
+#[derive(Debug)]
+struct Similarity {
+    pearsons_corr: f64,
+    cosine_similarity: f64,
+}
+
+fn meaures_of_similarity(v: Array1<f64>, w: Array1<f64>) -> Similarity {
+    let v_tilde = v.clone() - v.mean().unwrap();
+    let w_tilde = w.clone() - w.mean().unwrap();
+    let corr = (&v_tilde.dot(&w_tilde)) / (l2_norm(v_tilde) * l2_norm(w_tilde));
+
+    let cos = v.dot(&w) / (l2_norm(v) * l2_norm(w));
+    Similarity {
+        pearsons_corr: corr,
+        cosine_similarity: cos,
+    }
+}
+#[test]
+fn test_measure_similarity() {
+    let v = arr1(&[4., 5., 3., 1.]);
+    let w = arr1(&[4., 5., 3., 1.]);
+    let output = meaures_of_similarity(v, w);
+    assert_relative_eq!(output.pearsons_corr, 1., epsilon = TOL);
+    assert_relative_eq!(output.cosine_similarity, 1., epsilon = TOL);
 }

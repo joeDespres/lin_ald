@@ -7,11 +7,9 @@ mod vec;
 
 fn main() {
     let start_time = Instant::now();
-    let v = arr1(&[4., 5., 3.]);
-    let w = arr1(&[5., 4., 6.]);
-    let vcts = vec![v, w];
-    let weights = vec![10.0, 69.0];
-    let weight_mul = mul_weights(vcts, weights);
-    dbg!(weight_mul);
+    let v = arr1(&[4., 5., 3., 1.]);
+    let w = arr1(&[4., 5., 3., 1.]);
+    let output = meaures_of_similarity(v, w);
+    assert_eq!(output.pearsons_corr, 1.);
     dbg!(start_time.elapsed());
 }
