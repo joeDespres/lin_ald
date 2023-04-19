@@ -7,8 +7,8 @@ mod vec;
 
 fn main() {
     let start_time = Instant::now();
-    let v = arr1(&[4., 5., 3., 1.]);
-    let w = arr1(&[4., 5., 3., 1.]);
+    let v = Array::range(-50., 50., 1.);
+    let w = Array::range(-50., 50., 1.);
     let output = meaures_of_similarity(v, w);
     assert_eq!(output.pearsons_corr, 1.);
     dbg!(start_time.elapsed());

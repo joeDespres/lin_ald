@@ -169,12 +169,12 @@ fn test_mul_weights() {
     assert_eq!(weight_mul, expectation)
 }
 #[derive(Debug)]
-struct Similarity {
+pub struct Similarity {
     pearsons_corr: f64,
     cosine_similarity: f64,
 }
 
-fn meaures_of_similarity(v: Array1<f64>, w: Array1<f64>) -> Similarity {
+pub fn meaures_of_similarity(v: Array1<f64>, w: Array1<f64>) -> Similarity {
     let v_tilde = v.clone() - v.mean().unwrap();
     let w_tilde = w.clone() - w.mean().unwrap();
     let corr = (&v_tilde.dot(&w_tilde)) / (l2_norm(v_tilde) * l2_norm(w_tilde));
