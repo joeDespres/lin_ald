@@ -137,6 +137,7 @@ fn test_orth_decomp_struct() {
     );
 }
 
+#[allow(dead_code)]
 pub fn mul_weights(vec_set: Vec<Array1<f64>>, w: Vec<f64>) -> Vec<Array1<f64>> {
     let mut vec_length = Vec::new();
     for v in vec_set.iter().enumerate() {
@@ -169,11 +170,13 @@ fn test_mul_weights() {
     assert_eq!(weight_mul, expectation)
 }
 #[derive(Debug)]
+#[allow(dead_code)]
 pub struct Similarity {
     pearsons_corr: f64,
     cosine_similarity: f64,
 }
 
+#[allow(dead_code)]
 pub fn meaures_of_similarity(v: Array1<f64>, w: Array1<f64>) -> Similarity {
     let v_tilde = v.clone() - v.mean().unwrap();
     let w_tilde = w.clone() - w.mean().unwrap();
