@@ -1,6 +1,6 @@
 use approx::assert_relative_eq;
 use ndarray::prelude::*;
-use ndarray_rand::rand_distr::Normal;
+use ndarray_rand::rand_distr::{Bernoulli, Normal};
 use ndarray_rand::RandomExt;
 
 #[allow(dead_code)]
@@ -40,6 +40,11 @@ fn test_unit_vec() {
 pub fn normal_vec(n: usize) -> Array1<f64> {
     Array::random(n, Normal::new(0., 1.).unwrap())
 }
+pub fn bern(n: usize) -> Array1<f32> {
+    // slow and dumb way of typecasting
+    Array::random(n, Bernoulli::new(0.6).unwrap()).mapv(|x| if x { 1. } else { -1. })
+}
+
 #[allow(dead_code)]
 pub fn set_vec_len(mag: f64, vec: Array1<f64>) -> Array1<f64> {
     unit_vec(vec) * mag
