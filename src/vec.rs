@@ -1,5 +1,5 @@
 use approx::assert_relative_eq;
-use ndarray::prelude::*;
+use ndarray::{concatenate, prelude::*};
 use ndarray_rand::rand_distr::{Bernoulli, Normal};
 use ndarray_rand::RandomExt;
 
@@ -200,4 +200,10 @@ fn test_measure_similarity() {
     let output = meaures_of_similarity(v, w);
     assert_relative_eq!(output.pearsons_corr, 1., epsilon = TOL);
     assert_relative_eq!(output.cosine_similarity, 1., epsilon = TOL);
+}
+fn series(n: usize) -> Array1<i32> {
+    let v: Array1<i32> = -1 * Array::ones(n / 3);
+    let w: Array1<i32> = Array::ones(n / 3);
+    let y: Array1<i32> = -1 * Array::ones(n / 3);
+    concatenate(Axis(0), &[v.view(), w.view(), y.view()]).unwrap()
 }

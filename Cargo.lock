@@ -53,6 +53,7 @@ dependencies = [
  "approx",
  "ndarray",
  "ndarray-rand",
+ "num-traits",
  "rand",
 ]
 
