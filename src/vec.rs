@@ -4,7 +4,7 @@ use ndarray_rand::rand_distr::{Bernoulli, Normal};
 use ndarray_rand::RandomExt;
 
 #[allow(dead_code)]
-const TOL: f64 = 1e-10;
+pub const TOL: f64 = 1e-10;
 
 #[allow(dead_code)]
 pub fn l2_norm(x: Array1<f64>) -> f64 {
@@ -36,10 +36,16 @@ fn test_unit_vec() {
         approx::assert_relative_eq!(length, 1.0, epsilon = TOL);
     }
 }
+pub fn gen_brownian_motion(n: usize) -> Array1<f64> {
+    let mut n = normal_vec(n);
+    n.accumulate_axis_inplace(Axis(0), |&prev, curr| *curr += prev);
+    n
+}
 #[allow(dead_code)]
 pub fn normal_vec(n: usize) -> Array1<f64> {
     Array::random(n, Normal::new(0., 1.).unwrap())
 }
+#[allow(dead_code)]
 pub fn bern(n: usize, p: f64) -> Array1<f32> {
     assert!(p > 0.0);
     assert!(p < 1.0);
@@ -203,6 +209,7 @@ fn test_measure_similarity() {
     assert_relative_eq!(output.pearsons_corr, 1., epsilon = TOL);
     assert_relative_eq!(output.cosine_similarity, 1., epsilon = TOL);
 }
+#[allow(dead_code)]
 fn series(n: usize) -> Array1<i32> {
     let v: Array1<i32> = -1 * Array::ones(n / 3);
     let w: Array1<i32> = Array::ones(n / 3);
