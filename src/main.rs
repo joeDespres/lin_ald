@@ -1,4 +1,4 @@
-use ndarray::{concatenate, prelude::*};
+use ndarray::prelude::*;
 use std::time::Instant;
 use vec::normal_vec;
 

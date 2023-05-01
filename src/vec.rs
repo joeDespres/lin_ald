@@ -40,9 +40,11 @@ fn test_unit_vec() {
 pub fn normal_vec(n: usize) -> Array1<f64> {
     Array::random(n, Normal::new(0., 1.).unwrap())
 }
-pub fn bern(n: usize) -> Array1<f32> {
+pub fn bern(n: usize, p: f64) -> Array1<f32> {
+    assert!(p > 0.0);
+    assert!(p < 1.0);
     // slow and dumb way of typecasting
-    Array::random(n, Bernoulli::new(0.6).unwrap()).mapv(|x| if x { 1. } else { -1. })
+    Array::random(n, Bernoulli::new(p).unwrap()).mapv(|x| if x { 1. } else { -1. })
 }
 
 #[allow(dead_code)]
