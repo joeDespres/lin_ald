@@ -1,5 +1,5 @@
 use ndarray::prelude::*;
-use std::{process::Output, time::Instant};
+use std::time::Instant;
 
 mod metd;
 use crate::metd::FloatMethods;
