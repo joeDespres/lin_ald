@@ -1,3 +1,4 @@
+#[allow(unused_imports)]
 use approx::assert_relative_eq;
 use ndarray::{concatenate, prelude::*};
 use ndarray_rand::rand_distr::{Bernoulli, Normal};
@@ -36,6 +37,7 @@ fn test_unit_vec() {
         approx::assert_relative_eq!(length, 1.0, epsilon = TOL);
     }
 }
+#[allow(dead_code)]
 pub fn gen_brownian_motion(n: usize) -> Array1<f64> {
     let mut n = normal_vec(n);
     n.accumulate_axis_inplace(Axis(0), |&prev, curr| *curr += prev);
