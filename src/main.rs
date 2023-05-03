@@ -35,17 +35,18 @@ pub trait MyMatrixMethods<T>
 where
     T: ndarray::NdFloat,
 {
-    fn max(&self) -> T;
+    fn max(&self) -> f64;
 }
 
-impl<T> MyMatrixMethods<T> for Array1<T>
+impl<T> MyMatrixMethods<T> for Array2<T>
 where
     T: ndarray::NdFloat,
 {
-    fn max(&self) -> T {
-        self.clone()
-            .into_raw_vec()
-            .sort_by(|a, b| a.partial_cmp(b).unwrap())
-            .last()
+    fn max(&self) -> f64 {
+        dbg!(self.clone().into_raw_vec());
+        let vec = self.clone().into_raw_vec().sort_unstable();
+        dbg!(vec);
+
+        return 69.0;
     }
 }
