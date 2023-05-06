@@ -61,9 +61,9 @@ fn show_communitivity(a: Array2<f64>, b: Array2<f64>, sigma: f64) {
     let diff2 = r1.clone() - r3.clone();
     let diff3 = r2.clone() - r3.clone();
 
-    assert!(diff1.max() < vec::TOL);
-    assert!(diff2.max() < vec::TOL);
-    assert!(diff3.max() < vec::TOL);
+    assert!(diff1.max().abs() < vec::TOL);
+    assert!(diff2.max().abs() < vec::TOL);
+    assert!(diff3.max().abs() < vec::TOL);
 }
 
 pub trait MyMatrixMethods<T>
@@ -91,11 +91,10 @@ where
 }
 #[allow(dead_code)]
 pub fn mat_mul(a: Array2<f64>, b: Array2<f64>) -> Array2<f64> {
-    let out_row = a.nrows();
-    let out_col = a.ncols();
-    let mut c: Array2<f64> = Array::zeros((out_row, out_col));
-    for i in 0..a.ncols() {
-        for j in 0..b.nrows() {
+    assert_eq!(a.ncols(), b.nrows());
+    let mut c: Array2<f64> = Array::zeros((a.nrows(), b.ncols()));
+    for i in 0..a.nrows() {
+        for j in 0..b.ncols() {
             for k in 0..a.ncols() {
                 c[[i, j]] += a[[i, k]] * b[[k, j]];
             }
@@ -105,13 +104,13 @@ pub fn mat_mul(a: Array2<f64>, b: Array2<f64>) -> Array2<f64> {
 }
 #[test]
 fn test_mat_mul() {
-    let d = 30;
-
-    let a = Array::from_shape_vec((d, d), vec::gen_brownian_motion(d * d).to_vec()).unwrap();
-    let b = Array::from_shape_vec((d, d), vec::gen_brownian_motion(d * d).to_vec()).unwrap();
+    let d = 50;
+    let p = 150;
+    let a = Array::from_shape_vec((d, p), vec::gen_brownian_motion(d * p).to_vec()).unwrap();
+    let b = Array::from_shape_vec((p, d), vec::gen_brownian_motion(d * p).to_vec()).unwrap();
     let c = mat_mul(a.clone(), b.clone());
     let e = a.dot(&b);
-
     let diff = c - e;
-    assert!(diff.max() < vec::TOL);
+    dbg!(&diff.max());
+    assert!(diff.max().abs() < 1e-6);
 }
