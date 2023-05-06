@@ -89,3 +89,29 @@ where
         *vec.last().unwrap()
     }
 }
+#[allow(dead_code)]
+pub fn mat_mul(a: Array2<f64>, b: Array2<f64>) -> Array2<f64> {
+    let out_row = a.nrows();
+    let out_col = a.ncols();
+    let mut c: Array2<f64> = Array::zeros((out_row, out_col));
+    for i in 0..a.ncols() {
+        for j in 0..b.nrows() {
+            for k in 0..a.ncols() {
+                c[[i, j]] += a[[i, k]] * b[[k, j]];
+            }
+        }
+    }
+    c
+}
+#[test]
+fn test_mat_mul() {
+    let d = 30;
+
+    let a = Array::from_shape_vec((d, d), vec::gen_brownian_motion(d * d).to_vec()).unwrap();
+    let b = Array::from_shape_vec((d, d), vec::gen_brownian_motion(d * d).to_vec()).unwrap();
+    let c = mat_mul(a.clone(), b.clone());
+    let e = a.dot(&b);
+
+    let diff = c - e;
+    assert!(diff.max() < vec::TOL);
+}
