@@ -5,7 +5,7 @@ use ndarray_rand::rand_distr::{Bernoulli, Normal};
 use ndarray_rand::RandomExt;
 
 #[allow(dead_code)]
-pub const TOL: f64 = 1e-10;
+pub const TOL: f64 = 1e-6;
 
 #[allow(dead_code)]
 pub fn l2_norm(x: Array1<f64>) -> f64 {

@@ -89,6 +89,7 @@ where
         *vec.last().unwrap()
     }
 }
+
 #[allow(dead_code)]
 pub fn mat_mul(a: Array2<f64>, b: Array2<f64>) -> Array2<f64> {
     assert_eq!(a.ncols(), b.nrows());
@@ -113,4 +114,42 @@ fn test_mat_mul() {
     let diff = c - e;
     dbg!(&diff.max());
     assert!(diff.max().abs() < 1e-6);
+}
+
+#[allow(dead_code)]
+pub fn g(d: usize, p: usize) -> Result<Array2<f64>, ndarray::ShapeError> {
+    Array2::from_shape_vec((d, p), vec::gen_brownian_motion(d * p).to_vec())
+}
+
+#[test]
+fn test_live_evil() {
+    let l = g(2, 6).unwrap();
+    let i = g(6, 3).unwrap();
+    let v = g(3, 5).unwrap();
+    let e = g(5, 2).unwrap();
+
+    let live = l.dot(&i).dot(&v).dot(&e);
+    let out = live.t();
+    let other = e.t().dot(&v.t()).dot(&i.t()).dot(&l.t());
+
+    let diff = &out - other;
+    assert!(diff.max() < vec::TOL);
+}
+#[allow(dead_code)]
+fn is_symmetric(a: Array2<f64>) -> bool {
+    if &a.nrows() != &a.ncols() {
+        return false;
+    }
+    let a_t = &a.t();
+    let diff = a_t - &a;
+    diff.min() < vec::TOL
+}
+#[test]
+fn test_is_symetrix() {
+    let m = array![[1., 2.], [2., 1.]];
+    assert!(is_symmetric(m));
+
+    let m = g(5, 5).unwrap();
+
+    assert!(!is_symmetric(m));
 }
