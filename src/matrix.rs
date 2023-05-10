@@ -153,3 +153,27 @@ fn test_is_symetrix() {
 
     assert!(!is_symmetric(m));
 }
+#[allow(dead_code)]
+pub fn jankey_avg(a: Array2<f64>) -> Array2<f64> {
+    let a_t = &a.t();
+    (a_t + &a) / 2.
+}
+#[test]
+fn test_jankey_avg() {
+    let d = 5;
+    let a = Array::from_shape_vec((d, d), vec::gen_brownian_motion(d * d).to_vec()).unwrap();
+    let symetric = jankey_avg(a);
+
+    assert!(is_symmetric(symetric));
+}
+#[test]
+fn test_hadamard_mul() {
+    let d = 50;
+    let a = Array2::from_diag(&arr1(&vec::gen_brownian_motion(d).to_vec()));
+    let b = Array2::from_diag(&arr1(&vec::gen_brownian_motion(d).to_vec()));
+
+    let hadamard = &a * &b;
+    let dot_prod = &a.dot(&b);
+    let diff = hadamard - dot_prod;
+    assert!(diff.max() < vec::TOL);
+}
