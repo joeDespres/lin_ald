@@ -56,10 +56,10 @@ fn test_communitivity() {
 fn show_communitivity(a: Array2<f64>, b: Array2<f64>, sigma: f64) {
     let r1 = sigma * (a.clone() + b.clone());
     let r2 = sigma * a.clone() + sigma * b.clone();
-    let r3 = a.clone() * sigma + b.clone() * sigma;
+    let r3 = a * sigma + b * sigma;
     let diff1 = r1.clone() - r2.clone();
-    let diff2 = r1.clone() - r3.clone();
-    let diff3 = r2.clone() - r3.clone();
+    let diff2 = r1 - r3.clone();
+    let diff3 = r2 - r3;
 
     assert!(diff1.max().abs() < vec::TOL);
     assert!(diff2.max().abs() < vec::TOL);

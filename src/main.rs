@@ -1,5 +1,5 @@
-use matrix::MyMatrixMethods;
-use ndarray::{prelude::*, ShapeError};
+
+
 use std::time::Instant;
 
 mod matrix;
