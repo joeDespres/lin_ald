@@ -136,7 +136,7 @@ fn test_live_evil() {
     assert!(diff.max() < vec::TOL);
 }
 #[allow(dead_code)]
-fn is_symmetric(a: Array2<f64>) -> bool {
+pub fn is_symmetric(a: Array2<f64>) -> bool {
     if &a.nrows() != &a.ncols() {
         return false;
     }
