@@ -177,3 +177,40 @@ fn test_hadamard_mul() {
     let diff = hadamard - dot_prod;
     assert!(diff.max() < vec::TOL);
 }
+pub fn bm_mat(d: usize) -> Array2<f64> {
+    Array2::from_shape_vec((d, d), vec::gen_brownian_motion(d * d).to_vec()).unwrap()
+}
+#[allow(dead_code)]
+fn frobenius_norm(a: Array2<f64>) -> f64 {
+    a.sum().powf(2.0).sqrt()
+}
+
+#[test]
+fn test_frobenius_norm() {
+    let a = arr2(&[[2., 3., 4.], [4., 5., 6.]]);
+    let norm = frobenius_norm(a);
+    assert!(norm - 24.0 < vec::TOL);
+}
+pub fn frobenius_norm_to_zero(a: Array2<f64>, b: Array2<f64>) -> f64 {
+    let mut norm = 0.0;
+    let mut s = 1.0;
+    loop {
+        let _ = norm; // compiler warning hack
+        let c = s * a.clone() - s * b.clone();
+        norm = frobenius_norm(c.clone());
+        if norm < 1.0 {
+            break;
+        }
+        s *= 0.99;
+    }
+    return norm;
+}
+
+#[test]
+fn test_frobenius_norm_to_zero() {
+    let a = bm_mat(10);
+    let b = bm_mat(10);
+
+    let norm = frobenius_norm_to_zero(a, b);
+    assert!(norm - 1.0 < vec::TOL);
+}
