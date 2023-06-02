@@ -1,6 +1,8 @@
 use std::time::Instant;
 
-use ndarray::Array2;
+use ndarray::arr2;
+
+use crate::matrix::trace;
 
 mod matrix;
 mod vec;
@@ -8,11 +10,17 @@ mod vec;
 fn main() {
     let start_time = Instant::now();
 
-    let a = matrix::bm_mat(10);
-    let b = matrix::bm_mat(10);
+    let a = matrix::bm_mat(100);
 
-    let norm = matrix::frobenius_norm_to_zero(a, b);
+    let at = &a.t();
+    let ata = at.dot(&a);
+    let trace_ata = trace(ata).sqrt();
+    dbg!(trace_ata);
+
+    let at = &a.t();
+    let aat = &a.dot(at);
+    let trace_aat = trace(aat.clone()).sqrt();
+    dbg!(trace_aat);
 
     dbg!(start_time.elapsed());
-    dbg!(norm);
 }

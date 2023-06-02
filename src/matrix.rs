@@ -181,8 +181,8 @@ pub fn bm_mat(d: usize) -> Array2<f64> {
     Array2::from_shape_vec((d, d), vec::gen_brownian_motion(d * d).to_vec()).unwrap()
 }
 #[allow(dead_code)]
-fn frobenius_norm(a: Array2<f64>) -> f64 {
-    a.sum().powf(2.0).sqrt()
+pub fn frobenius_norm(a: Array2<f64>) -> f64 {
+    a.map(|a| a.powf(2.0)).sum().sqrt()
 }
 
 #[test]
@@ -191,13 +191,14 @@ fn test_frobenius_norm() {
     let norm = frobenius_norm(a);
     assert!(norm - 24.0 < vec::TOL);
 }
+#[allow(dead_code)]
 pub fn frobenius_norm_to_zero(a: Array2<f64>, b: Array2<f64>) -> f64 {
     let mut norm = 0.0;
     let mut s = 1.0;
     loop {
         let _ = norm; // compiler warning hack
         let c = s * a.clone() - s * b.clone();
-        norm = frobenius_norm(c.clone());
+        norm = frobenius_norm(c);
         if norm < 1.0 {
             break;
         }
@@ -213,4 +214,25 @@ fn test_frobenius_norm_to_zero() {
 
     let norm = frobenius_norm_to_zero(a, b);
     assert!(norm - 1.0 < vec::TOL);
+}
+
+#[allow(dead_code)]
+pub fn trace(a: Array2<f64>) -> f64 {
+    a.diag().sum()
+}
+#[test]
+fn test_trace() {
+    let a = bm_mat(100);
+    let f = frobenius_norm(a.clone());
+
+    let at = &a.t();
+    let ata = at.dot(&a);
+    let trace_ata = trace(ata).sqrt();
+
+    assert!(f - trace_ata < vec::TOL);
+
+    let at = &a.t();
+    let aat = &a.dot(at);
+    let trace_aat = trace(aat.clone()).sqrt();
+    assert!(trace_ata - trace_aat < vec::TOL);
 }
