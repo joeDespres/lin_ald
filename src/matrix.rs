@@ -236,3 +236,19 @@ fn test_trace() {
     let trace_aat = trace(aat.clone()).sqrt();
     assert!(trace_ata - trace_aat < vec::TOL);
 }
+pub fn bm_mat_rec(i: usize, j: usize) -> Array2<f64> {
+    Array2::from_shape_vec(
+        (i, j),
+        vec::gen_brownian_motion((i * j).try_into().unwrap()).to_vec(),
+    )
+    .unwrap()
+}
+#[test]
+fn test_bm_mat_rec() {
+    let rows = 420;
+    let cols = 69;
+
+    let a = bm_mat_rec(rows, cols);
+    let dim = a.dim();
+    assert_eq!(dim, (420, 69));
+}

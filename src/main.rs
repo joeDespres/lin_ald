@@ -1,26 +1,23 @@
 use std::time::Instant;
 
-use ndarray::arr2;
-
-use crate::matrix::trace;
+use ndarray::Array2;
 
 mod matrix;
 mod vec;
 
 fn main() {
     let start_time = Instant::now();
+    let rows = 10;
+    let cols = 10000;
 
-    let a = matrix::bm_mat(100);
+    let a = matrix::bm_mat_rec(rows, cols);
 
-    let at = &a.t();
-    let ata = at.dot(&a);
-    let trace_ata = trace(ata).sqrt();
-    dbg!(trace_ata);
+    let rows = 10000;
+    let cols = 69;
 
-    let at = &a.t();
-    let aat = &a.dot(at);
-    let trace_aat = trace(aat.clone()).sqrt();
-    dbg!(trace_aat);
+    let b = matrix::bm_mat_rec(rows, cols);
+    let c = a.dot(&b);
+    dbg!(c.dim());
 
     dbg!(start_time.elapsed());
 }
