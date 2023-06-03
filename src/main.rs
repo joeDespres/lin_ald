@@ -1,7 +1,5 @@
 use std::time::Instant;
 
-use ndarray::Array2;
-
 mod matrix;
 mod vec;
 

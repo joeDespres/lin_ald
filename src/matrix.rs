@@ -177,6 +177,7 @@ fn test_hadamard_mul() {
     let diff = hadamard - dot_prod;
     assert!(diff.max() < vec::TOL);
 }
+#[allow(dead_code)]
 pub fn bm_mat(d: usize) -> Array2<f64> {
     Array2::from_shape_vec((d, d), vec::gen_brownian_motion(d * d).to_vec()).unwrap()
 }
