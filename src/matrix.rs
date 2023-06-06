@@ -253,3 +253,30 @@ fn test_bm_mat_rec() {
     let dim = a.dim();
     assert_eq!(dim, (420, 69));
 }
+#[allow(dead_code)]
+pub fn cov_mat(a: Array2<f64>) -> Array2<f64> {
+    let n = a.nrows() as f64;
+    a.t().dot(&a) / (n - 1.0)
+}
+#[test]
+fn test_cov_mat() {
+    let a = arr2(&[[-1., 0.], [0., -1.], [1., 1.]]);
+    let c = cov_mat(a);
+    let target = arr2(&[[1.0, 0.5], [0.5, 1.0]]);
+    assert_eq!(c, target);
+}
+#[allow(dead_code)]
+pub fn cov_to_corr(c: Array2<f64>) -> Array2<f64> {
+    let mean_vec = c.mean_axis(Axis(0)).unwrap();
+    let d = c.clone() - mean_vec;
+    let s = c.diag().map(|a| a.sqrt().powf(-1.0));
+    let s_mat = Array2::from_diag(&s);
+    s_mat.dot(&c).dot(&s_mat)
+}
+#[test]
+fn test_cov_to_corr() {
+    let c = arr2(&[[1.0, 0.5], [0.5, 1.0]]);
+    let target = arr2(&[[1.0, 0.5], [0.5, 1.0]]);
+    let r = cov_to_corr(c);
+    assert_eq!(target, r);
+}
