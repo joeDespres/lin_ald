@@ -12,13 +12,5 @@ fn main() {
     let a = matrix::bm_mat_rec(rows, cols);
     let det_a = a.det().unwrap();
     dbg!(det_a);
-
-    let rows = 10000;
-    let cols = 69;
-
-    let b = matrix::bm_mat_rec(rows, cols);
-    let c = a.dot(&b);
-    dbg!(c.dim());
-
     dbg!(start_time.elapsed());
 }
