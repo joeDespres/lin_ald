@@ -9,5 +9,7 @@ edition = "2021"
 approx = "0.5.1"
 ndarray = "0.15.6"
 ndarray-rand = "0.14.0"
+# https://github.com/rust-ndarray/ndarray-linalg
+ndarray-linalg = { version = "0.14.1", features = ["netlib-system"] }
 num-traits = "0.2.15"
 rand = "0.8.5"
