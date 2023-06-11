@@ -1,5 +1,6 @@
 use ndarray::{Array, Array2, Axis};
 use ndarray_linalg::Determinant;
+use num::One;
 
 pub trait MyLinOps<T>
 where
@@ -7,12 +8,36 @@ where
 {
     fn minors_mat(&self) -> Array2<T>;
     fn sub_matricies(&self, rm_rows: &[usize], rm_cols: &[usize]) -> Array2<T>;
+    fn grid_mat(&self) -> Array2<T>;
+    fn cofactors_mat(&self) -> Array2<T>;
 }
 
 impl<T> MyLinOps<T> for Array2<T>
 where
     T: ndarray::NdFloat + Clone + ndarray_linalg::Lapack,
 {
+    fn cofactors_mat(&self) -> Array2<T> {
+        let grid = self.grid_mat();
+        self * grid
+    }
+
+    fn grid_mat(&self) -> Array2<T> {
+        let n_rows = self.nrows();
+        let n_cols = self.ncols();
+        let mut grid_mat: Array2<T> = Self::zeros((n_rows, n_cols));
+        let mut iter = 0;
+        for row_i in 0..n_rows {
+            for col_j in 0..n_cols {
+                if iter % 2 != 0 {
+                    grid_mat[[row_i, col_j]] -= One::one();
+                }
+                iter += 1;
+            }
+        }
+
+        grid_mat
+    }
+
     fn minors_mat(&self) -> Self {
         let n_rows = self.nrows();
         let n_cols = self.ncols();
@@ -61,6 +86,23 @@ where
     }
 }
 #[test]
+fn test_cofactors_mat() {
+    use ndarray::arr2;
+    let a = arr2(&[[1.0, 2.0, 3.0], [4.0, 5.0, 6.0], [7.0, 8.0, 9.0]]);
+    let c = a.cofactors_mat();
+    let target = arr2(&[[0., -2., 0.], [-4., 0., -6.], [0., -8., 0.]]);
+    assert_eq!(c, target);
+}
+#[test]
+fn test_grid_mat() {
+    use ndarray::arr2;
+    let a = arr2(&[[1.0, 2.0, 3.0], [4.0, 5.0, 6.0], [7.0, 8.0, 9.0]]);
+    let g = a.grid_mat();
+    let target = arr2(&[[0.0, -1.0, 0.0], [-1.0, 0.0, -1.0], [0.0, -1.0, 0.0]]);
+    assert_eq!(g, target);
+}
+
+#[test]
 fn test_minors_mat() {
     use crate::matrix::MyMatrixMethods;
     use crate::vec::TOL;
@@ -68,7 +110,6 @@ fn test_minors_mat() {
     let a = arr2(&[[1.0, 2.0, 3.0], [4.0, 5.0, 6.0], [7.0, 8.0, 9.0]]);
     let m = a.minors_mat();
     let target = arr2(&[[-3., -6., -3.], [-6., -12., -6.], [-3., -6., -3.]]);
-
     assert!((m - target).min() < TOL);
 }
 
