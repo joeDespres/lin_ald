@@ -13,11 +13,11 @@ impl<T> MyLinOps<T> for Array2<T>
 where
     T: ndarray::NdFloat + Clone + ndarray_linalg::Lapack,
 {
-    fn minors_mat(&self) -> Array2<T> {
+    fn minors_mat(&self) -> Self {
         let n_rows = self.nrows();
         let n_cols = self.ncols();
 
-        let mut minors_mat = Array::zeros((n_rows, n_cols));
+        let mut minors_mat = Self::zeros((n_rows, n_cols));
         for row_i in 0..n_rows {
             for col_j in 0..n_cols {
                 let s = self.sub_matricies(&[row_i], &[col_j]);
@@ -28,7 +28,7 @@ where
 
         minors_mat
     }
-    fn sub_matricies(&self, rm_rows: &[usize], rm_cols: &[usize]) -> Array2<T> {
+    fn sub_matricies(&self, rm_rows: &[usize], rm_cols: &[usize]) -> Self {
         let mut keep_row = vec![true; self.nrows()];
         rm_rows.iter().for_each(|row| keep_row[*row] = false);
 

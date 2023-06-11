@@ -181,7 +181,7 @@ fn test_mul_weights() {
     let weight_mul = mul_weights(vcts, weights);
 
     let expectation = vec![arr1(&[40., 50., 30.]), arr1(&[345., 276., 414.])];
-    assert_eq!(weight_mul, expectation)
+    assert_eq!(weight_mul, expectation);
 }
 #[derive(Debug)]
 #[allow(dead_code)]

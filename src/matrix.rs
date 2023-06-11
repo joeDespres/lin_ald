@@ -205,7 +205,7 @@ pub fn frobenius_norm_to_zero(a: Array2<f64>, b: Array2<f64>) -> f64 {
         }
         s *= 0.99;
     }
-    return norm;
+    norm
 }
 
 #[test]
@@ -271,7 +271,7 @@ pub fn cov_to_corr(c: Array2<f64>) -> Array2<f64> {
     // todo demean the incomming mat
     // let mean_vec = c.mean_axis(Axis(0)).unwrap();
     // let d = c.clone() - mean_vec;
-    let s = c.diag().map(|a| a.sqrt().powf(-1.0));
+    let s = c.diag().map(|a| a.sqrt().powi(-1));
     let s_mat = Array2::from_diag(&s);
     s_mat.dot(&c).dot(&s_mat)
 }
