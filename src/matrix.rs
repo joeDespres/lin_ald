@@ -237,6 +237,7 @@ fn test_trace() {
     let trace_aat = trace(aat.clone()).sqrt();
     assert!(trace_ata - trace_aat < vec::TOL);
 }
+#[allow(dead_code)]
 pub fn bm_mat_rec(i: usize, j: usize) -> Array2<f64> {
     Array2::from_shape_vec(
         (i, j),
@@ -267,8 +268,9 @@ fn test_cov_mat() {
 }
 #[allow(dead_code)]
 pub fn cov_to_corr(c: Array2<f64>) -> Array2<f64> {
-    let mean_vec = c.mean_axis(Axis(0)).unwrap();
-    let d = c.clone() - mean_vec;
+    // todo demean the incomming mat
+    // let mean_vec = c.mean_axis(Axis(0)).unwrap();
+    // let d = c.clone() - mean_vec;
     let s = c.diag().map(|a| a.sqrt().powf(-1.0));
     let s_mat = Array2::from_diag(&s);
     s_mat.dot(&c).dot(&s_mat)
