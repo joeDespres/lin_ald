@@ -10,12 +10,27 @@ where
     fn sub_matricies(&self, rm_rows: &[usize], rm_cols: &[usize]) -> Array2<T>;
     fn grid_mat(&self) -> Array2<T>;
     fn cofactors_mat(&self) -> Array2<T>;
+    fn invert(&self) -> Array2<T>;
 }
 
 impl<T> MyLinOps<T> for Array2<T>
 where
     T: ndarray::NdFloat + Clone + ndarray_linalg::Lapack,
 {
+    fn invert(&self) -> Array2<T> {
+        let minors_mat = self.minors_mat();
+
+        let cofactors = minors_mat.cofactors_mat();
+        let cofactors_t = cofactors.t();
+        let scale = self.det().unwrap();
+
+        let nrow = self.nrows();
+        let ncol = self.ncols();
+
+        let scale_mat = Array2::from_elem((nrow, ncol), scale);
+        cofactors_t.to_owned() * scale_mat
+    }
+
     fn cofactors_mat(&self) -> Array2<T> {
         let grid = self.grid_mat();
         self * grid
@@ -85,6 +100,14 @@ where
             .unwrap()
             .reversed_axes()
     }
+}
+#[test]
+fn test_invert() {
+    use ndarray::arr2;
+    let a = arr2(&[[1., 2., 3.], [0., 1., 4.], [5., 6., 0.]]);
+    let a_inv = a.invert();
+    let target = arr2(&[[-24., 18., 5.], [20., -15., -4.], [-5., 4., 1.]]);
+    assert_eq!(a_inv, target);
 }
 #[test]
 fn test_cofactors_mat() {

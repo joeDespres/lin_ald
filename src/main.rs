@@ -4,12 +4,14 @@ use std::time::Instant;
 mod lin_ops;
 mod matrix;
 mod vec;
+use ndarray_linalg::Solve;
 
 fn main() {
     let start_time = Instant::now();
 
-    let a = arr2(&[[1.0, 2.0, 3.0], [4.0, 5.0, 6.0], [7.0, 8.0, 9.0]]);
-    dbg!(a.cofactors_mat());
+    let a = arr2(&[[1., 2., 3.], [0., 1., 4.], [5., 6., 0.]]);
+    dbg!(a.invert());
+    let target = arr2(&[[-24, 18, 5], [20, -15, -4], [-5, 4, 1]]);
     // let det_a = a.det().unwrap();
     dbg!(start_time.elapsed());
 }
