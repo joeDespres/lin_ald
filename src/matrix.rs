@@ -61,9 +61,9 @@ fn show_communitivity(a: Array2<f64>, b: Array2<f64>, sigma: f64) {
     let diff2 = r1 - r3.clone();
     let diff3 = r2 - r3;
 
-    assert!(diff1.max().abs() < vec::TOL);
-    assert!(diff2.max().abs() < vec::TOL);
-    assert!(diff3.max().abs() < vec::TOL);
+    assert!(diff1.abs_max().abs() < vec::TOL);
+    assert!(diff2.abs_max().abs() < vec::TOL);
+    assert!(diff3.abs_max().abs() < vec::TOL);
 }
 
 pub trait MyMatrixMethods<T>
@@ -72,6 +72,7 @@ where
 {
     fn max(&self) -> T;
     fn min(&self) -> T;
+    fn abs_max(&self) -> T;
 }
 
 impl<T> MyMatrixMethods<T> for Array2<T>
@@ -81,13 +82,27 @@ where
     fn max(&self) -> T {
         let mut vec = self.clone().into_raw_vec();
         vec.sort_by(|a, b| a.partial_cmp(b).unwrap());
-        *vec.first().unwrap()
+        *vec.last().unwrap()
     }
     fn min(&self) -> T {
         let mut vec = self.clone().into_raw_vec();
         vec.sort_by(|a, b| a.partial_cmp(b).unwrap());
+        *vec.first().unwrap()
+    }
+    fn abs_max(&self) -> T {
+        let mut vec = self.clone().into_raw_vec();
+        vec.sort_by(|a, b| a.abs().partial_cmp(&b.abs()).unwrap());
         *vec.last().unwrap()
     }
+}
+
+#[test]
+fn test_abs_max() {
+    let a = arr2(&[[1.0, 2.0, 3.0], [4.0, 5.0, 6.0], [7.0, 8.0, 9.0]]);
+    assert_eq!(a.max(), 9.0);
+    assert_eq!(a.min(), 1.0);
+    let a = arr2(&[[1.0, 2.0, 3.0], [4.0, 5.0, 6.0], [7.0, -18.0, 9.0]]);
+    assert_eq!(a.abs_max(), -18.0);
 }
 
 #[allow(dead_code)]
@@ -112,8 +127,8 @@ fn test_mat_mul() {
     let c = mat_mul(a.clone(), b.clone());
     let e = a.dot(&b);
     let diff = c - e;
-    dbg!(&diff.max());
-    assert!(diff.max().abs() < 1e-6);
+    dbg!(&diff.abs_max());
+    assert!(diff.abs_max().abs() < 1e-6);
 }
 
 #[allow(dead_code)]
@@ -133,7 +148,7 @@ fn test_live_evil() {
     let other = e.t().dot(&v.t()).dot(&i.t()).dot(&l.t());
 
     let diff = &out - other;
-    assert!(diff.max() < vec::TOL);
+    assert!(diff.abs_max() < vec::TOL);
 }
 #[allow(dead_code)]
 pub fn is_symmetric(a: Array2<f64>) -> bool {
@@ -142,15 +157,18 @@ pub fn is_symmetric(a: Array2<f64>) -> bool {
     }
     let a_t = &a.t();
     let diff = a_t - &a;
-    diff.min() < vec::TOL
+    dbg!(&a);
+    dbg!(&a_t);
+    dbg!(&diff);
+
+    diff.abs_max() < vec::TOL
 }
 #[test]
 fn test_is_symetrix() {
     let m = array![[1., 2.], [2., 1.]];
     assert!(is_symmetric(m));
 
-    let m = g(5, 5).unwrap();
-
+    let m = array![[2., 3.], [2., 1.]];
     assert!(!is_symmetric(m));
 }
 #[allow(dead_code)]
@@ -175,7 +193,7 @@ fn test_hadamard_mul() {
     let hadamard = &a * &b;
     let dot_prod = &a.dot(&b);
     let diff = hadamard - dot_prod;
-    assert!(diff.max() < vec::TOL);
+    assert!(diff.abs_max() < vec::TOL);
 }
 #[allow(dead_code)]
 pub fn bm_mat(d: usize) -> Array2<f64> {

@@ -2,8 +2,6 @@ use ndarray::{Array, Array2, Axis};
 use ndarray_linalg::Determinant;
 use num::One;
 
-use crate::matrix::MyMatrixMethods;
-
 pub trait MyLinOps<T>
 where
     T: ndarray::NdFloat,
@@ -105,12 +103,23 @@ where
 }
 #[test]
 fn test_invert() {
+    use crate::matrix::bm_mat;
+    use crate::matrix::MyMatrixMethods;
+    use crate::vec::TOL;
     use ndarray::arr2;
     let a = arr2(&[[1., 2., 3.], [0., 1., 4.], [5., 6., 0.]]);
     let a_inv = a.invert();
     let target = arr2(&[[-24., 18., 5.], [20., -15., -4.], [-5., 4., 1.]]);
-    use crate::vec::TOL;
-    assert!((a_inv - target).min() < TOL);
+
+    let diff = (a_inv - target).abs_max();
+    assert!(diff < TOL);
+    for i in 10..25 {
+        let a = bm_mat(i);
+        let a_inv = a.invert();
+        let target: Array2<f64> = Array2::eye(i);
+        let diff = (a_inv - target).abs_max();
+        assert!(diff < TOL);
+    }
 }
 #[test]
 fn test_cofactors_mat() {
@@ -137,7 +146,7 @@ fn test_minors_mat() {
     let a = arr2(&[[1.0, 2.0, 3.0], [4.0, 5.0, 6.0], [7.0, 8.0, 9.0]]);
     let m = a.minors_mat();
     let target = arr2(&[[-3., -6., -3.], [-6., -12., -6.], [-3., -6., -3.]]);
-    assert!((m - target).min() < TOL);
+    assert!((m - target).abs_max() < TOL);
 }
 
 #[test]
