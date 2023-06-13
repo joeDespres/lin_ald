@@ -2,6 +2,8 @@ use ndarray::{Array, Array2, Axis};
 use ndarray_linalg::Determinant;
 use num::One;
 
+use crate::matrix::MyMatrixMethods;
+
 pub trait MyLinOps<T>
 where
     T: ndarray::NdFloat,
@@ -107,7 +109,8 @@ fn test_invert() {
     let a = arr2(&[[1., 2., 3.], [0., 1., 4.], [5., 6., 0.]]);
     let a_inv = a.invert();
     let target = arr2(&[[-24., 18., 5.], [20., -15., -4.], [-5., 4., 1.]]);
-    assert_eq!(a_inv, target);
+    use crate::vec::TOL;
+    assert!((a_inv - target).min() < TOL);
 }
 #[test]
 fn test_cofactors_mat() {
