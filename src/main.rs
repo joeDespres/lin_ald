@@ -1,9 +1,18 @@
 mod lin_ops;
 mod matrix;
 mod vec;
-
-use ndarray::array;
+use crate::lin_ops::MyLinOps;
+use crate::matrix::bm_mat;
+use crate::matrix::MyMatrixMethods;
+use ndarray_linalg::Inverse;
 fn main() {
-    let m = array![[2., 3.], [2., 1.]];
-    assert!(matrix::is_symmetric(m));
+    let a = bm_mat(3);
+
+    let i_inv = &a.inv().unwrap();
+    dbg!(&i_inv);
+    dbg!(&a.invert());
+
+    let diff = (i_inv - &a.invert()).abs_max();
+
+    dbg!(diff);
 }
