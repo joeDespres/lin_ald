@@ -113,6 +113,23 @@ fn test_invert() {
     let diff = (a_inv - target).abs_max();
 
     assert!(diff < TOL);
+
+    let a = arr2(&[
+        [1., 1., 1., 0.],
+        [0., 3., 1., 2.],
+        [1., 0., 2., 1.],
+        [2., 3., 1., 0.],
+    ]);
+    let a_inv = a.invert();
+    let target = arr2(&[
+        [-3.0, 1.00, 3.00, -3.],
+        [-0.5, 0.25, 0.25, 0.],
+        [1.0, -0.50, -0.50, 1.],
+        [1.5, -0.25, -1.25, 1.],
+    ]);
+    let diff = (a_inv - target).abs_max();
+    assert!(diff < TOL);
+
     let a = arr2(&[[0., 1., 1.], [2., 2., 2.], [2., 1., 1.]]);
     let a_inv = a.invert();
     let target = arr2(&[[-1., 0., 1.], [0.5, 1., -1.], [0., -1., 1.]]);

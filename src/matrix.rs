@@ -77,7 +77,7 @@ where
 
 impl<T> MyMatrixMethods<T> for Array2<T>
 where
-    T: ndarray::NdFloat,
+    T: ndarray::NdFloat + num::Signed,
 {
     fn max(&self) -> T {
         let mut vec = self.clone().into_raw_vec();
@@ -92,7 +92,8 @@ where
     fn abs_max(&self) -> T {
         let mut vec = self.clone().into_raw_vec();
         vec.sort_by(|a, b| a.abs().partial_cmp(&b.abs()).unwrap());
-        *vec.last().unwrap()
+        let larges_absolute_value = *vec.last().unwrap();
+        return num::abs(larges_absolute_value);
     }
 }
 
@@ -102,7 +103,7 @@ fn test_abs_max() {
     assert_eq!(a.max(), 9.0);
     assert_eq!(a.min(), 1.0);
     let a = arr2(&[[1.0, 2.0, 3.0], [4.0, 5.0, 6.0], [7.0, -18.0, 9.0]]);
-    assert_eq!(a.abs_max(), -18.0);
+    assert_eq!(a.abs_max(), 18.0);
 }
 
 #[allow(dead_code)]
