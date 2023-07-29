@@ -110,6 +110,33 @@ where
     }
 }
 #[test]
+fn test_grid() {
+    use ndarray::arr2;
+    let a = arr2(&[[1., 2., 3.], [0., 1., 4.], [5., 6., 0.]]);
+    let grid = a.grid_mat();
+    let target = arr2(&[[1., -1., 1.], [-1., 1., -1.], [1., -1., 1.]]);
+    assert_eq!(grid, target);
+    let a = arr2(&[[1.0, 2.0, 3.0], [4.0, 5.0, 6.0], [7.0, 8.0, 9.0]]);
+    let g = a.grid_mat();
+    let target = arr2(&[[1.0, -1.0, 1.0], [-1.0, 1.0, -1.0], [1.0, -1.0, 1.0]]);
+    assert_eq!(g, target);
+
+    let a = arr2(&[
+        [1., 1., 1., 0.],
+        [0., 3., 1., 2.],
+        [1., 0., 2., 1.],
+        [2., 3., 1., 0.],
+    ]);
+    let grid = a.grid_mat();
+    let target = arr2(&[
+        [1.0, -1.0, 1.0, -1.0],
+        [-1.0, 1.0, -1.0, 1.0],
+        [1.0, -1.0, 1.0, -1.0],
+        [-1.0, 1.0, -1.0, 1.0],
+    ]);
+    assert_eq!(grid, target);
+}
+#[test]
 fn test_invert() {
     use crate::matrix::bm_mat;
     use crate::matrix::MyMatrixMethods;
@@ -119,7 +146,6 @@ fn test_invert() {
     let a_inv = a.invert();
     let target = arr2(&[[-24., 18., 5.], [20., -15., -4.], [-5., 4., 1.]]);
     let diff = (a_inv - target).abs_max();
-
     assert!(diff < TOL);
 
     let a = arr2(&[
@@ -158,14 +184,6 @@ fn test_cofactors_mat() {
     let c = a.cofactors_mat();
     let target = arr2(&[[1., -2., 3.], [-4., 5., -6.], [7., -8., 9.]]);
     assert_eq!(c, target);
-}
-#[test]
-fn test_grid_mat() {
-    use ndarray::arr2;
-    let a = arr2(&[[1.0, 2.0, 3.0], [4.0, 5.0, 6.0], [7.0, 8.0, 9.0]]);
-    let g = a.grid_mat();
-    let target = arr2(&[[1.0, -1.0, 1.0], [-1.0, 1.0, -1.0], [1.0, -1.0, 1.0]]);
-    assert_eq!(g, target);
 }
 
 #[test]
