@@ -19,7 +19,6 @@ where
 {
     fn invert(&self) -> Array2<T> {
         let minors_mat = self.minors_mat();
-
         let cofactors = minors_mat.cofactors_mat();
         let cofactors_t = cofactors.t();
         let scale = self.det().unwrap();
@@ -39,19 +38,28 @@ where
     fn grid_mat(&self) -> Array2<T> {
         let n_rows = self.nrows();
         let n_cols = self.ncols();
-        let mut grid_mat: Array2<T> = Self::ones((n_rows, n_cols));
+        assert_eq!(n_rows, n_cols);
+        let mut row_iter = n_rows;
+        let mut col_iter = n_cols;
+
+        if n_rows % 2 == 0 {
+            row_iter += 1;
+            col_iter += 1;
+        }
+
+        let mut grid_mat: Array2<T> = Self::zeros((row_iter, col_iter));
         let mut iter = 0;
-        for row_i in 0..n_rows {
-            for col_j in 0..n_cols {
-                if iter % 2 != 0 {
-                    grid_mat[[row_i, col_j]] -= One::one();
+        for row_i in 0..row_iter {
+            for col_j in 0..col_iter {
+                if iter % 2 == 0 {
+                    grid_mat[[row_i, col_j]] += One::one();
+                } else {
                     grid_mat[[row_i, col_j]] -= One::one();
                 }
                 iter += 1;
             }
         }
-
-        grid_mat
+        grid_mat.slice(ndarray::s![..n_rows, ..n_cols]).to_owned()
     }
 
     fn minors_mat(&self) -> Self {
