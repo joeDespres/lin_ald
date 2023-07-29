@@ -176,9 +176,9 @@ fn nest_invert() {
     let diff = (a_inv - target).abs_max();
     assert!(diff < TOL);
 
-    let a = bm_mat(2);
+    let a = bm_mat(10);
     let a_inv = a.invert();
-    let target: Array2<f64> = Array2::eye(2);
+    let target: Array2<f64> = Array2::eye(10);
     let aainv = a.dot(&a_inv);
     let diff = (&aainv - &target).abs_max();
     assert!(diff < TOL);
