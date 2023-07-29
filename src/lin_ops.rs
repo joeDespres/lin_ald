@@ -20,19 +20,17 @@ where
     fn invert(&self) -> Array2<T> {
         let minors_mat = self.minors_mat();
         let cofactors = minors_mat.cofactors_mat();
-        let cofactors_t = cofactors.t();
+        let cofactors_t = cofactors.t().to_owned();
         let scale = self.det().unwrap();
 
         let nrow = self.nrows();
         let ncol = self.ncols();
-
         let scale_mat = Array2::from_elem((nrow, ncol), scale);
-        cofactors_t.to_owned() * scale_mat
+        cofactors_t / scale_mat
     }
 
     fn cofactors_mat(&self) -> Array2<T> {
-        let grid = self.grid_mat();
-        self * grid
+        self * self.grid_mat()
     }
 
     fn grid_mat(&self) -> Array2<T> {
@@ -137,16 +135,11 @@ fn test_grid() {
     assert_eq!(grid, target);
 }
 #[test]
-fn test_invert() {
+fn nest_invert() {
     use crate::matrix::bm_mat;
     use crate::matrix::MyMatrixMethods;
     use crate::vec::TOL;
     use ndarray::arr2;
-    let a = arr2(&[[1., 2., 3.], [0., 1., 4.], [5., 6., 0.]]);
-    let a_inv = a.invert();
-    let target = arr2(&[[-24., 18., 5.], [20., -15., -4.], [-5., 4., 1.]]);
-    let diff = (a_inv - target).abs_max();
-    assert!(diff < TOL);
 
     let a = arr2(&[
         [1., 1., 1., 0.],
@@ -154,19 +147,32 @@ fn test_invert() {
         [1., 0., 2., 1.],
         [2., 3., 1., 0.],
     ]);
+
     let a_inv = a.invert();
     let target = arr2(&[
         [-3.0, 1.00, 3.00, -3.],
         [-0.5, 0.25, 0.25, 0.],
         [1.0, -0.50, -0.50, 1.],
         [1.5, -0.25, -1.25, 1.],
-    ]);
+    ])
+    .t()
+    .to_owned();
+
+    let diff = (a_inv - target).abs_max();
+    assert!(diff < TOL);
+    let a = arr2(&[[1., 2., 3.], [0., 1., 4.], [5., 6., 0.]]);
+    let a_inv = a.invert();
+    let target = arr2(&[[-24., 20., -5.], [18., -15., 4.], [5., -4., 1.]])
+        .t()
+        .to_owned();
     let diff = (a_inv - target).abs_max();
     assert!(diff < TOL);
 
-    let a = arr2(&[[0., 1., 1.], [2., 2., 2.], [2., 1., 1.]]);
+    let a = arr2(&[[0., 1., 1.], [2., 2., 2.], [2., 6., 1.]]);
     let a_inv = a.invert();
-    let target = arr2(&[[-1., 0., 1.], [0.5, 1., -1.], [0., -1., 1.]]);
+    let target = arr2(&[[-1., 0.2, 0.8], [0.5, -0.2, 0.2], [0., 0.2, -0.2]])
+        .t()
+        .to_owned();
     let diff = (a_inv - target).abs_max();
     assert!(diff < TOL);
 
