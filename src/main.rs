@@ -10,19 +10,16 @@ use ndarray_linalg::Inverse;
 use std::time::Instant;
 
 fn main() {
-    for i in 2.. {
-        let a = bm_mat(i);
-        let start_time = Instant::now();
-        let a_inv = a.inv().unwrap();
-        let elapsed_time = start_time.elapsed();
-        println!("Elapsed time ndarray: {:?}", elapsed_time);
-        let start_time = Instant::now();
-        let amyinv = a.invert();
-        let elapsed_time = start_time.elapsed();
-        println!("Elapsed time mine: {:?}", elapsed_time);
-        let diff = (&a_inv - amyinv).abs_max();
-        dbg!(diff);
-        dbg!(i);
-        assert!(diff < TOL);
-    }
+    use crate::matrix::MyMatrixMethods;
+    use crate::TOL;
+    use ndarray::arr2;
+    let w = arr2(&[
+        [1., 1., 1., 3., 1., 8., 6., 9.],
+        [1., 3., 2., 3., 1., 7., 8., 3.],
+        [2., 0., 1., 3., 1., 5., 3., 6.],
+    ]);
+    let r = w.right_inverse();
+    let wr = w.dot(&r);
+    let target: Array2<f64> = Array2::eye(3);
+    dbg!((wr - target).abs_max());
 }

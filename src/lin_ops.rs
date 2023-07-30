@@ -13,16 +13,25 @@ where
     fn cofactors_mat(&self) -> Array2<T>;
     fn invert(&self) -> Array2<T>;
     fn left_inverse(&self) -> Array2<T>;
+    fn right_inverse(&self) -> Array2<T>;
 }
 
 impl<T> MyLinOps<T> for Array2<T>
 where
     T: ndarray::NdFloat + Clone + ndarray_linalg::Lapack,
 {
+    fn right_inverse(&self) -> Array2<T> {
+        let wide_matrix = self;
+        let wide_wide_transpose = wide_matrix.dot(&wide_matrix.t().to_owned());
+        let wide_wide_transpose_inv = wide_wide_transpose.inv().unwrap();
+        let r = wide_matrix.t().to_owned().dot(&wide_wide_transpose_inv);
+        return r;
+    }
+
     fn left_inverse(&self) -> Array2<T> {
         let tall_mat = self;
-        let tall_mat_tall_mat_transpose = tall_mat.t().to_owned().dot(tall_mat);
-        let t_t_t_inv = tall_mat_tall_mat_transpose.inv().unwrap();
+        let tall_mat_transpse_tall_mat = tall_mat.t().to_owned().dot(tall_mat);
+        let t_t_t_inv = tall_mat_transpse_tall_mat.inv().unwrap();
         let l = t_t_t_inv.dot(&self.t().to_owned());
         return l;
     }
@@ -116,6 +125,21 @@ where
             .unwrap()
             .reversed_axes()
     }
+}
+#[test]
+fn test_right_inverse() {
+    use crate::matrix::MyMatrixMethods;
+    use crate::TOL;
+    use ndarray::arr2;
+    let w = arr2(&[
+        [1., 1., 1., 3., 1., 8., 6., 9.],
+        [1., 3., 2., 3., 1., 7., 8., 3.],
+        [2., 0., 1., 3., 1., 5., 3., 6.],
+    ]);
+    let r = w.right_inverse();
+    let wr = w.dot(&r);
+    let target: Array2<f64> = Array2::eye(3);
+    assert!((wr - target).abs_max() < TOL);
 }
 
 #[test]
