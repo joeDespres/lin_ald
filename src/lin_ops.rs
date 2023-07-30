@@ -1,5 +1,6 @@
 use ndarray::{Array, Array2, Axis};
 use ndarray_linalg::Determinant;
+use ndarray_linalg::Inverse;
 use num::One;
 
 pub trait MyLinOps<T>
@@ -11,12 +12,21 @@ where
     fn grid_mat(&self) -> Array2<T>;
     fn cofactors_mat(&self) -> Array2<T>;
     fn invert(&self) -> Array2<T>;
+    fn left_inverse(&self) -> Array2<T>;
 }
 
 impl<T> MyLinOps<T> for Array2<T>
 where
     T: ndarray::NdFloat + Clone + ndarray_linalg::Lapack,
 {
+    fn left_inverse(&self) -> Array2<T> {
+        let tall_mat = self;
+        let tall_mat_tall_mat_transpose = tall_mat.t().to_owned().dot(tall_mat);
+        let t_t_t_inv = tall_mat_tall_mat_transpose.inv().unwrap();
+        let l = t_t_t_inv.dot(&self.t().to_owned());
+        return l;
+    }
+
     fn invert(&self) -> Array2<T> {
         let minors_mat = self.minors_mat();
         let cofactors = minors_mat.cofactors_mat();
@@ -107,6 +117,27 @@ where
             .reversed_axes()
     }
 }
+
+#[test]
+fn test_left_inverse() {
+    use crate::matrix::MyMatrixMethods;
+    use crate::TOL;
+    use ndarray::arr2;
+    let t = arr2(&[
+        [1., 1., 1.],
+        [7., 3., 1.],
+        [0., 3., 1.],
+        [0., 9., 1.],
+        [1., 0., 2.],
+        [0., 3., 1.],
+        [2., 3., 2.],
+    ]);
+    let l = t.left_inverse();
+    let lt = l.dot(&t);
+    let target: Array2<f64> = Array2::eye(3);
+    assert!((lt - target).abs_max() < TOL);
+}
+
 #[test]
 fn test_grid() {
     use ndarray::arr2;
