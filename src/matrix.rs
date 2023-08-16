@@ -1,9 +1,29 @@
 use crate::vec;
 use ndarray::{concatenate, prelude::*};
+use ndarray_linalg::{into_col, into_row};
 
 #[allow(dead_code)]
 pub fn acess_indx(a: Array2<f64>, i: usize, j: usize) -> String {
     format!("the matrix element at a[[{}, {}]] is {}", i, j, a[[i, j]])
+}
+#[allow(dead_code)]
+pub fn hilbert_mat(c: f64) -> Array2<f64> {
+    let a: Array1<f64> = Array::range(1., c + 1., 1.);
+    let a = into_col(a);
+    let b: Array1<f64> = Array::range(0., c, 1.);
+    let b = into_row(b);
+    (a + b).mapv(|x| x.powi(-1))
+}
+
+#[test]
+fn test_hilbert_mat() {
+    let h = hilbert_mat(3.0);
+    let target = arr2(&[
+        [1., 1. / 2., 1. / 3.],
+        [1. / 2., 1. / 3., 1. / 4.],
+        [1. / 3., 1. / 4., 1. / 5.],
+    ]);
+    assert_eq!(h, target);
 }
 
 #[allow(dead_code)]

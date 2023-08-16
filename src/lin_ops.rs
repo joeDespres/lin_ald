@@ -237,6 +237,8 @@ fn nest_invert() {
     let aainv = a.dot(&a_inv);
     let diff = (&aainv - &target).abs_max();
     assert!(diff < TOL);
+    let w = arr2(&[[1., 2., 1.], [1., 3., 2.], [2., 0., 1.]]);
+    assert!((w.invert().invert() - &w).abs_max() < TOL);
 }
 #[test]
 fn test_cofactors_mat() {
